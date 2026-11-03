@@ -49,5 +49,10 @@ ls genomes
 #run the job
 sbatch run_gtdbtk.sh
 
+#check that it produced a summary of its classifications
+ls -l out/gtdbtk.bac120.summary.tsv
+
+#Now copy the summary up into the gtdbtk folder. Git ignores everything inside out, but it can see a .tsv file saved directly in gtdbtk, so this lets you add the summary to your repository.
+cp out/gtdbtk.bac120.summary.tsv .
 ```
 

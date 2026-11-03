@@ -62,7 +62,64 @@ head metabat.5.ec.report
   ## name ecdysteroid metabolism (arthropods) is a name for the pathway
 ```
 
+```{bash}
+#look for job
+tail ../prokka/slurm-486.out
 
+#run the following code to prepare minpath inputs for all bins.
+while read bin;do 
+  cat ../prokka/$bin/${bin}.tsv | awk -F '\t' '$5{printf("%s\t%s\n", $1,$5)}' | grep -v '^locus' > ${bin}.ec 
+done < ../checkm/bbd_topbins.txt
 
+#Now run minpath on every bin. 
+while read bin;do 
+  minpath -ec ${bin}.ec -report ${bin}.ec.report -details ${bin}.ec.details
+done < ../checkm/bbd_topbins.txt
 
+# The first pathway is named photosynthesis light reactions and has the metacyc code PWY-101. This pathway includes the essential components of photosynthesis that occur in light, Photosystem I and Photosystem II.
+# Use the following command to search for this pathway across all the bins
+grep 'PWY-101' *.ec.report
+```
+
+Question 4.1
+How many bins contain at least one gene from this pathway?
+  5 bins:
+    - contig_118
+    - metabat.38
+    - metabat.4
+    - metabat.51
+    - metabat.64
+
+Which bin has all of the genes (ie a complete pathway)?
+  metabat.64  ->  fam-found  4
+
+For which bins does minpath keep the pathway (minpath 1)?
+  3 bins:
+    - metabat.38
+    - metabat.51
+    - metabat.64
+
+```{bash}
+#Cross reference your results with the output from gtdbtk to see the taxonomy of bins containing this pathway.
+grep 'metabat.26' ../gtdbtk/gtdbtk.bac120.summary.tsv
+
+grep 'PWY-5360' *.ec.report
+```
+
+Question 4.2
+How many bins contain the pathway PWY-5360?
+  1 bin:
+    - metabat.3
+
+What order (in a taxonomic sense) do these bins belong to? Are they in the same family?
+  metabat.3 is classified as:
+    - Order: Campylobacterales
+    - Family: Arcobacteraceae
+    - Genus: Halarcobacter
+  
+How strong is the evidence that these bins really have this pathway? Look at the fam-found and minpath columns.
+  The evidence is weak:
+    - fam0 3 – The pathway is expected to contain 3 gene families.
+    - fam-found 1 – Only 1 of the 3 gene families was detected.
+    - minpath 0 – MinPath does not retain this pathway.
 

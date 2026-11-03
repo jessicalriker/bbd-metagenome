@@ -42,5 +42,6 @@ ls metabat.5
 #create new shell script
 #run the job
 sbatch run_prokka.sh
+
 ```
 
