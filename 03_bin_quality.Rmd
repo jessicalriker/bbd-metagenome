@@ -1,7 +1,7 @@
 ---
 title: "BBD Metagenome: Bin Quality"
-author: "Your Name"
-date: "`r Sys.Date()`"
+author: "Jessica Riker"
+date: "`r Sys.Date(03/11/26)`"
 output:
   github_document:
     html_preview: false
@@ -23,3 +23,45 @@ bash chunk. R chunks run from the top of the repository.
 -->
 
 Completeness and contamination of each bin, estimated with CheckM, and selection of the most complete bins for further analysis. Commands for this step were run in `checkm/`.
+
+
+```{bash}
+# As before cd to the folder for this step, checkm.
+cd ~/bbd-metagenome/checkm
+
+#find the longest
+#  command will display the lengths of all contigs sorted from shortest to longest.
+cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | sort -n #4706700 contig_118
+
+#The first command saves your longest contig as a bin of its own, in the same folder as the metabat bins, so that all the later steps treat it just like the other bins. The second command copies all of the bins, including your longest contig, into the bins_bbd folder inside checkm.
+samtools faidx ../flye/bbd/assembly.fasta contig_118 > ../metabat/bins_bbd/contig_118.fa
+cp ../metabat/bins_bbd/*.fa bins_bbd/
+```
+
+```{bash}
+#create new file and run job
+sbatch run_checkm_bbd.sh
+```
+
+
+```{bash}
+#change directory
+cd ~/bbd-metagenome/checkm
+
+#look at results
+head checkm_results_bbd.txt 
+
+#show more lines of results
+head -n 20 checkm_results_bbd.txt 
+
+#Let’s focus on bins with a completeness greater than 15%. To extract the bin IDs for these we can use awk. This command should print only the lines where the 13th column has a value greater than 15.
+cat checkm_results_bbd.txt | awk '$13>15'
+
+#just get bin ID
+cat checkm_results_bbd.txt | awk '$13>15{print $1}'
+
+# send this output to a file so that we can use it in the next step
+cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
+```
+
+

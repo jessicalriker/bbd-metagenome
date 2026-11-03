@@ -1,7 +1,7 @@
 ---
 title: "BBD Metagenome: Metabolic Pathways"
-author: "Your Name"
-date: "`r Sys.Date()`"
+author: "Jessica Riker"
+date: "`r Sys.Date(03/11/26)`"
 output:
   github_document:
     html_preview: false
@@ -23,3 +23,46 @@ bash chunk. R chunks run from the top of the repository.
 -->
 
 Metabolic pathways inferred from the Prokka annotations with MinPath. Commands for this step were run in `minpath/`.
+
+```{bash}
+#change directory
+cd ~/bbd-metagenome/minpath
+
+#Start by looking at the .tsv file for a single bin
+head ../prokka/metabat.5/metabat.5.tsv
+
+#For input to minpath we only want to keep a unique ID for each gene (column 1) and its EC number (column 5). 
+head ../prokka/metabat.5/metabat.5.tsv | awk -F '\t' '{print $1,$5}'
+
+# filter the output to only include lines with an EC number
+head ../prokka/metabat.5/metabat.5.tsv | awk -F '\t' '$5{print $1,$5}'
+
+# ensure that the output is tab separated and we also need to remove the header line
+head ../prokka/metabat.5/metabat.5.tsv | awk -F '\t' '$5{OFS="\t";print $1,$5}' | grep -v '^locus'
+
+#This of course only processes the first 10 lines … we need to change head to cat to include all genes
+cat ../prokka/metabat.5/metabat.5.tsv | awk -F '\t' '$5{OFS="\t";print $1,$5}' | grep -v '^locus'
+
+# Finally we send the output to a file so that it can be used as input to minpath
+cat ../prokka/metabat.5/metabat.5.tsv | awk -F '\t' '$5{OFS="\t";print $1,$5}' | grep -v '^locus' > metabat.5.ec
+
+# run minpath on this file as follows;
+minpath -ec metabat.5.ec -report metabat.5.ec.report -details metabat.5.ec.details
+
+# look at the top few lines of output
+head metabat.5.ec.report 
+
+#EXAMPLE
+  ##  path PWY-7321 any n/a  naive 1  minpath 1  fam0  4  fam-found  2  name  ecdysteroid metabolism (arthropods)
+  ## PWY-7321 which is a pathway identifier in the metacyc database. You can use this to lookup the full pathway. Eg PWY-7321
+  ## naive 1 tells us that at least one gene from this pathway was found. Simply calling a pathway present whenever one of its genes is found is the “naive” approach
+  ## minpath 1 tells us that minpath kept this pathway in its minimal set of pathways. If this says minpath 0 then minpath decided that the genes found are better explained by other pathways, so the evidence for this one is weak
+  ## fam0 4 tells us that four gene families are involved in this pathway
+  ## fam-found 2 tells us that we found 2 gene families from the pathway in this genome
+  ## name ecdysteroid metabolism (arthropods) is a name for the pathway
+```
+
+
+
+
+

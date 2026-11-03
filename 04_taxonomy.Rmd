@@ -1,7 +1,7 @@
 ---
 title: "BBD Metagenome: Taxonomy"
-author: "Your Name"
-date: "`r Sys.Date()`"
+author: "Jessica Riker"
+date: "`r Sys.Date(03/11/26)`"
 output:
   github_document:
     html_preview: false
@@ -23,3 +23,31 @@ bash chunk. R chunks run from the top of the repository.
 -->
 
 Taxonomic classification of the most complete bins with GTDB-Tk. Commands for this step were run in `gtdbtk/`.
+
+```{bash}
+#change directory
+cd ~/bbd-metagenome/gtdbtk
+```
+
+```{bash}
+#will iterate over our list of topbins. For each of the topbins we want to copy a file corresponding to that bin into our genomes folder.
+while read bin;do echo $bin;done < ../checkm/bbd_topbins.txt
+
+#  to turn this bin name into a path specifying the fasta file for the bin. So for every bin we need to prepend the path to its folder ../metabat/bins_bbd/ and then append the file extension .fa
+while read bin;do echo "../metabat/bins_bbd/${bin}.fa";done < ../checkm/bbd_topbins.txt
+
+#perform the copy
+while read bin;do cp "../metabat/bins_bbd/${bin}.fa" genomes;done < ../checkm/bbd_topbins.txt
+
+# check that it worked
+ls genomes
+```
+
+
+```{bash}
+#created new shell script
+#run the job
+sbatch run_gtdbtk.sh
+
+```
+

@@ -1,7 +1,7 @@
 ---
 title: "BBD Metagenome: Gene Annotation"
-author: "Your Name"
-date: "`r Sys.Date()`"
+author: "Jessica Riker"
+date: "`r Sys.Date(03/11/26)`"
 output:
   github_document:
     html_preview: false
@@ -23,3 +23,24 @@ bash chunk. R chunks run from the top of the repository.
 -->
 
 Gene prediction and annotation of the most complete bins with Prokka. Commands for this step were run in `prokka/`.
+
+```{bash}
+#change directory
+cd ~/bbd-metagenome/prokka
+
+#First we try running prokka for a single bin. Pick a bin
+cat ../checkm/bbd_topbins.txt
+
+bin=metabat.5
+prokka --cpus 2 --outdir $bin --prefix $bin  ../metabat/bins_bbd/${bin}.fa
+
+#list contents of folder
+ls metabat.5
+```
+
+```{bash}
+#create new shell script
+#run the job
+sbatch run_prokka.sh
+```
+

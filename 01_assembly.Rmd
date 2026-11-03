@@ -1,7 +1,7 @@
 ---
 title: "BBD Metagenome: Assembly"
-author: "Your Name"
-date: "`r Sys.Date()`"
+author: "Jessica Riker"
+date: "`r Sys.Date(03/11/26)`"
 output:
   github_document:
     html_preview: false
@@ -23,3 +23,28 @@ bash chunk. R chunks run from the top of the repository.
 -->
 
 Assembly of the BBD nanopore reads with Flye. Commands for this step were run in `flye/`.
+
+```{bash}
+#Change directory into flye and then make a symbolic link to the bbd read data
+
+cd ~/bbd-metagenome/flye
+ln -s /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .
+```
+
+```{bash}
+#made a new shell script called run_flye_bbd.sh and saved it inside flye directory.
+# submit your job using:
+
+sbatch run_flye_bbd.sh
+
+#check server to monitor if job is running
+squeue
+
+# check that it worked before you move on
+sacct -j 442 --format=JobID,State,MaxRSS,Elapsed
+
+#check that there is a finished assembly
+ls -l bbd/assembly.fasta
+```
+
+
